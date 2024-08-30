@@ -7,15 +7,20 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from datasets import load_dataset
 
-def load_data(file_path):
-    try:
-        df = pd.read_csv(file_path)
-        st.write(df.head())
-    except Exception as e:
-        st.error(f"Error loading data: {e}")
+def load_data(uploaded_file):
+    if uploaded_file is not None:
+        try:
+            # Read the uploaded file into a DataFrame
+            df = pd.read_csv(uploaded_file)
+            st.write(df.head())
+        except Exception as e:
+            st.error(f"Error loading data: {e}")
 
-file_path = "hf://datasets/lllaurenceee/Shopee_Bicycle_Reviews/Dataset_D_Duplicate.csv"
-load_data(file_path)
+# Create a file uploader widget
+uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
+
+# Load data if a file is uploaded
+load_data(uploaded_file)
 
 # Convert DataFrame to a list of lists and extract headers
 data = df.values.tolist()
