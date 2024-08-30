@@ -5,10 +5,10 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
+from datasets import load_dataset
 
-# Load dataset into a pandas DataFrame
-file_path = "hf://datasets/lllaurenceee/Shopee_Bicycle_Reviews/Dataset_D_Duplicate.csv"
-df = pd.read_csv(file_path)
+dataset = load_dataset('lllaurenceee/Shopee_Bicycle_Reviews', split='train')
+df = dataset.to_pandas()
 
 # Convert DataFrame to a list of lists and extract headers
 data = df.values.tolist()
