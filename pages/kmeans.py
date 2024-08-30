@@ -7,8 +7,15 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from datasets import load_dataset
 
-dataset = load_dataset('lllaurenceee/Shopee_Bicycle_Reviews', split='train')
-df = dataset.to_pandas()
+def load_data(file_path):
+    try:
+        df = pd.read_csv(file_path)
+        st.write(df.head())
+    except Exception as e:
+        st.error(f"Error loading data: {e}")
+
+file_path = "hf://datasets/lllaurenceee/Shopee_Bicycle_Reviews/Dataset_D_Duplicate.csv"
+load_data(file_path)
 
 # Convert DataFrame to a list of lists and extract headers
 data = df.values.tolist()
