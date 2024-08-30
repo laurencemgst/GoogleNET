@@ -7,7 +7,8 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 
 # Load dataset into a pandas DataFrame
-df = pd.read_csv("hf://datasets/lllaurenceee/Shopee_Bicycle_Reviews/Dataset_D_Duplicate.csv")
+file_path = "hf://datasets/lllaurenceee/Shopee_Bicycle_Reviews/Dataset_D_Duplicate.csv"
+df = pd.read_csv(file_path)
 
 # Convert DataFrame to a list of lists and extract headers
 data = df.values.tolist()
