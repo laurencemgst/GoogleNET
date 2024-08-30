@@ -8,29 +8,20 @@ from sklearn.metrics import silhouette_score
 from datasets import load_dataset
 import csv
 
-def load_data(file_path):
-    try:
-        # Read the CSV file
-        with open(file_path, mode='r', encoding='utf-8') as file:
-            csv_reader = csv.reader(file)
-            headers = next(csv_reader)  # Get the headers
-            data = [row for row in csv_reader]  # Get the rest of the data
-        
-        # Display the first few rows of data
-        st.write("Headers:", headers)
-        st.write("First few rows of data:", data[:5])
-        
-        return headers, data
-    except Exception as e:
-        st.error(f"Error loading data: {e}")
-        return None, None
+ds = load_dataset("lllaurenceee/Shopee_Bicycle_Reviews")
 
-# Define the file path
-file_path = "hf://datasets/lllaurenceee/Shopee_Bicycle_Reviews/Dataset_D_Duplicate.csv"
+# Convert DataFrame to a list of lists and extract headers
+data = []
 
-# Load and process the data
-headers, data = load_data(file_path)
+# Read lines from uploaded_file and decode each line
+decoded_file = [line.decode('utf-8') for line in ds.readlines()]
+csv_reader = csv.reader(decoded_file)
 
+for row in csv_reader:
+   data.append(row)
+
+headers = data[0]
+data = data[1:]
 
 # Define the KMeans clustering function
 def apply_kmeans_on_single_column(data, column_idx, encoder=None, n_clusters=0):
