@@ -7,9 +7,9 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from datasets import load_dataset
 
-# Load dataset using Hugging Face's datasets library
 def load_data():
     try:
+        # Load the dataset from Hugging Face
         dataset = load_dataset('lllaurenceee/Shopee_Bicycle_Reviews', split='train')
         df = dataset.to_pandas()
         st.write(df.head())
