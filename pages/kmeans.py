@@ -5,24 +5,28 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
-from datasets import load_dataset
 
 def load_data(file_path):
     try:
         df = pd.read_csv(file_path)
         st.write(df.head())
+        return df
     except Exception as e:
         st.error(f"Error loading data: {e}")
+        return None
 
-file_path = "hf://datasets/lllaurenceee/Shopee_Bicycle_Reviews/Dataset_D_Duplicate.csv"
-load_data(file_path)
+def encode_column(df, column_idx):
+    """Encodes a categorical column."""
+    encoder = LabelEncoder()
+    df.iloc[:, column_idx] = encoder.fit_transform(df.iloc[:, column_idx])
+    return encoder
 
-# Define the KMeans clustering function
-def apply_kmeans_on_single_column(data, column_idx, encoder=None, n_clusters=0):
-    X = np.array([[row[column_idx]] for row in data])
-
+def apply_kmeans_on_column(df, column_idx, encoder=None, n_clusters=0):
+    """Applies KMeans clustering on a specified column of the DataFrame."""
+    X = df.iloc[:, column_idx].values.reshape(-1, 1)
+    
     # Scale the data if it's continuous and not in special columns
-    if isinstance(X[0][0], (int, float)) and column_idx not in [5, 6]:
+    if df.dtypes[column_idx] in [np.int64, np.float64] and column_idx not in [8, 9]:
         scaler = StandardScaler()
         X_scaled = scaler.fit_transform(X)
     else:
@@ -32,29 +36,22 @@ def apply_kmeans_on_single_column(data, column_idx, encoder=None, n_clusters=0):
     kmeans = KMeans(n_clusters=n_clusters, random_state=42).fit(X_scaled)
     labels = kmeans.labels_
 
-    # Calculate and print the silhouette score
+    # Calculate silhouette score
     silhouette_avg = silhouette_score(X_scaled, labels)
     st.text(f"Silhouette Score for column {headers[column_idx]}: {silhouette_avg:.2f}")
 
-    # Extract cluster centers
-    cluster_centers = kmeans.cluster_centers_
-
     # Visualization
     plt.figure(figsize=(10, 6))
-    plt.scatter(X, [i for i in range(len(X))], c=kmeans.labels_, cmap='rainbow')
-
-    # Plot centroids
-    centroid_colors = [plt.cm.rainbow(label/n_clusters) for label in range(n_clusters)]
-    plt.scatter(kmeans.cluster_centers_, [i for i in range(n_clusters)], s=200, c=centroid_colors, marker='X')
+    plt.scatter(X, np.arange(len(X)), c=kmeans.labels_, cmap='rainbow')
+    plt.scatter(kmeans.cluster_centers_, np.arange(n_clusters), s=200, c=range(n_clusters), marker='X', cmap='rainbow')
 
     # Add legend based on encoder
     if encoder:
-        original_values = [encoder.inverse_transform([int(center)])[0] for center in np.round(kmeans.cluster_centers_).flatten()]
-        legend_handles = [plt.Line2D([0], [0], marker='X', color='w', label=value, markersize=10, markerfacecolor=centroid_colors[i]) for i, value in enumerate(original_values)]
+        original_values = encoder.inverse_transform(np.round(kmeans.cluster_centers_).astype(int).flatten())
+        legend_handles = [plt.Line2D([0], [0], marker='X', color='w', label=value, markersize=10, markerfacecolor=plt.cm.rainbow(i/n_clusters)) for i, value in enumerate(original_values)]
         plt.legend(handles=legend_handles, title=headers[column_idx])
     else:
-        legend_handles = [plt.Line2D([0], [0], marker='X', color='w', label=cluster_names[i], markersize=10, markerfacecolor=centroid_colors[i]) for i in range(n_clusters)]
-        plt.legend(handles=legend_handles, title=headers[column_idx])
+        plt.legend([plt.Line2D([0], [0], marker='X', color='w', label=f"Centroid {i+1}", markersize=10, markerfacecolor=plt.cm.rainbow(i/n_clusters)) for i in range(n_clusters)], title=headers[column_idx])
 
     if column_idx == 9:  # Date column
         plt.xlabel("Date")
@@ -65,42 +62,29 @@ def apply_kmeans_on_single_column(data, column_idx, encoder=None, n_clusters=0):
 
     plt.ylabel('Data Points Index')
     plt.title(f'KMeans Clustering on {headers[column_idx]}')
-    plt.show()
     st.pyplot(plt.gcf())
 
     return kmeans.cluster_centers_
 
+# Load data
+file_path = "hf://datasets/lllaurenceee/Shopee_Bicycle_Reviews/Dataset_D_Duplicate.csv"
+df = load_data(file_path)
 
-#this is it
-# Using label encoders to convert string data into numeric for clustering
-date_encoder = LabelEncoder()
+if df is not None:
+    headers = df.columns.tolist()
 
-date = [row[9] for row in data]
+    with st.expander("KMEANS SINGLE COLUMN"):
+        st.write(""" ## KMEANS FOR SHOP """)
+        shop_encoder = encode_column(df, 1)
+        n_clusters_shop = 3
+        apply_kmeans_on_column(df, column_idx=1, encoder=shop_encoder, n_clusters=n_clusters_shop)
 
-encoded_date = date_encoder.fit_transform(date)
+        st.write(""" ## KMEANS FOR BRAND """)
+        brand_encoder = encode_column(df, 4)
+        n_clusters_date = 5
+        apply_kmeans_on_column(df, column_idx=4, encoder=brand_encoder, n_clusters=n_clusters_date)
 
-for idx, row in enumerate(data):
-    row[9] = encoded_date[idx]  # Encoded brand
-
-# Example usage of the function
-column_idx = 9  # Replace with the index of the column you want to analyze
-n_clusters = 5
-
-# Call the function with the specified column index
-cluster_centers = apply_kmeans_on_single_column(
-    data,
-    column_idx=column_idx,
-    encoder=date_encoder,  # Use encoder if applicable
-    n_clusters=n_clusters
-)
-
-quantity_centroid_meanings = [
-  "1",
-  "2",
-  "3",
-  "4",
-  "5"
-]
-
-for i, center in enumerate((cluster_centers)):
-    st.text(f"Centroid {i+1}: {quantity_centroid_meanings[i]} (Value: {center[0]:.2f})")
+        st.write(""" ## KMEANS FOR DATE """)
+        date_encoder = encode_column(df, 9)
+        n_clusters_date = 5
+        apply_kmeans_on_column(df, column_idx=9, encoder=date_encoder, n_clusters=n_clusters_date)
