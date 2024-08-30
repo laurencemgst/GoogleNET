@@ -18,8 +18,8 @@ file_path = "hf://datasets/lllaurenceee/Shopee_Bicycle_Reviews/Dataset_D_Duplica
 load_data(file_path)
 
 # Convert DataFrame to a list of lists and extract headers
-data = df.values.tolist()
-headers = df.columns.tolist()
+data = filepath.values.tolist()
+headers = filepath.columns.tolist()
 
 # Define the KMeans clustering function
 def apply_kmeans_on_single_column(data, column_idx, encoder=None, n_clusters=0):
