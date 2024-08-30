@@ -6,22 +6,20 @@ from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from datasets import load_dataset
-import csv
 
-ds = load_dataset("lllaurenceee/Shopee_Bicycle_Reviews")
+def load_data(file_path):
+    try:
+        df = pd.read_csv(file_path)
+        st.write(df.head())
+    except Exception as e:
+        st.error(f"Error loading data: {e}")
+
+file_path = "hf://datasets/lllaurenceee/Shopee_Bicycle_Reviews/Dataset_D_Duplicate.csv"
+load_data(file_path)
 
 # Convert DataFrame to a list of lists and extract headers
-data = []
-
-# Read lines from uploaded_file and decode each line
-decoded_file = [line.decode('utf-8') for line in ds.readlines()]
-csv_reader = csv.reader(decoded_file)
-
-for row in csv_reader:
-   data.append(row)
-
-headers = data[0]
-data = data[1:]
+data = df.values.tolist()
+headers = df.columns.tolist()
 
 # Define the KMeans clustering function
 def apply_kmeans_on_single_column(data, column_idx, encoder=None, n_clusters=0):
