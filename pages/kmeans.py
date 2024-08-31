@@ -21,12 +21,12 @@ def encode_column(df, column_idx):
     df.iloc[:, column_idx] = encoder.fit_transform(df.iloc[:, column_idx])
     return encoder
 
-def apply_kmeans_on_column(df, column_idx, encoder=None, n_clusters=0):
+def apply_kmeans_on_column(df, column_idx, encoder=None, n_clusters=4):
     """Applies KMeans clustering on a specified column of the DataFrame."""
     X = df.iloc[:, column_idx].values.reshape(-1, 1)
     
     # Scale the data if it's continuous and not in special columns
-    if df.dtypes[column_idx] in [np.int64, np.float64] and column_idx not in [8, 9]:
+    if df.iloc[:, column_idx].dtype in [np.int64, np.float64] and column_idx not in [8, 9]:
         scaler = StandardScaler()
         X_scaled = scaler.fit_transform(X)
     else:
