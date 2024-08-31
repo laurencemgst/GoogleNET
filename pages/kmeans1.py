@@ -1,0 +1,178 @@
+import streamlit as st
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+
+# Streamlit app
+st.title('KMeans Clustering Visualization')
+
+# Read the CSV file into a DataFrame
+df = pd.read_csv("hf://datasets/lllaurenceee/Shopee_Bicycle_Reviews/Dataset_D_Duplicate.csv")
+
+# Convert DataFrame to a list of lists (excluding the header)
+data = [row.tolist() for index, row in df.iterrows()]
+
+# Extract headers
+headers = df.columns.tolist()
+
+
+# Define the KMeans clustering function
+def apply_kmeans_one_column(data, column_idx, encoder=None, n_clusters=0):
+    X = np.array([[row[column_idx]] for row in data])
+
+    # Scale the data if it's continuous and not in special columns
+    if isinstance(X[0][0], (int, float)) and column_idx not in [5, 6]:
+        scaler = StandardScaler()
+        X_scaled = scaler.fit_transform(X)
+    else:
+        X_scaled = X
+
+    # Apply KMeans clustering
+    kmeans = KMeans(n_clusters=n_clusters, random_state=42).fit(X_scaled)
+    labels = kmeans.labels_
+
+    # Calculate and print the silhouette score
+    silhouette_avg = silhouette_score(X_scaled, labels)
+    st.write(f"Silhouette Score for column {headers[column_idx]}: {silhouette_avg:.2f}")
+
+    # Extract cluster centers
+    cluster_centers = kmeans.cluster_centers_
+
+    # Visualization
+    plt.figure(figsize=(10, 6))
+    plt.scatter(X, [i for i in range(len(X))], c=kmeans.labels_, cmap='rainbow')
+
+    # Plot centroids
+    centroid_colors = [plt.cm.rainbow(label/n_clusters) for label in range(n_clusters)]
+    plt.scatter(kmeans.cluster_centers_, [i for i in range(n_clusters)], s=200, c=centroid_colors, marker='X')
+
+    # Add legend based on encoder
+    if encoder:
+        original_values = [encoder.inverse_transform([int(center)])[0] for center in np.round(kmeans.cluster_centers_).flatten()]
+        legend_handles = [plt.Line2D([0], [0], marker='X', color='w', label=value, markersize=10, markerfacecolor=centroid_colors[i]) for i, value in enumerate(original_values)]
+        plt.legend(handles=legend_handles, title=headers[column_idx])
+    else:
+        legend_handles = [plt.Line2D([0], [0], marker='X', color='w', label=f"Centroid {i+1}", markersize=10, markerfacecolor=centroid_colors[i]) for i in range(n_clusters)]
+        plt.legend(handles=legend_handles, title=headers[column_idx])
+
+    if column_idx == 9:  # Date column
+        plt.xlabel("Date")
+        flattened_X = X.flatten()
+        plt.xticks(ticks=np.linspace(min(flattened_X), max(flattened_X), n_clusters), labels=[encoder.inverse_transform([int(tick)])[0] for tick in np.linspace(min(flattened_X), max(flattened_X), n_clusters)])
+    else:
+        plt.xlabel(headers[column_idx])
+
+    plt.ylabel('Data Points Index')
+    plt.title(f'KMeans Clustering on {headers[column_idx]}')
+    plt.show()
+    st.pyplot(plt.gcf())
+
+    return kmeans.cluster_centers_
+
+with st.expander("KMEANS SINGLE COLUMN"):
+    st.write(""" ## KMEANS FOR SHOP """)
+    # Extract and encode date column
+    shop_encoder = LabelEncoder()
+    shop_column = [row[1] for row in data]
+    encoded_shop = shop_encoder.fit_transform(shop_column)
+
+    # Update data with encoded values
+    for idx, row in enumerate(data):
+        row[1] = encoded_shop[idx]
+
+    # Example usage
+    cluster_centers = apply_kmeans_one_column(
+        data,
+        column_idx=1,
+        encoder=shop_encoder,
+        n_clusters=5
+    )
+
+    st.write(""" ## KMEANS FOR PRICE """)
+    cluster_centers = apply_kmeans_one_column(
+        data,
+        column_idx=5,
+        n_clusters=4
+    )
+
+    st.write(""" ## KMEANS FOR BRAND """)
+    # Extract and encode date column
+    brand_encoder = LabelEncoder()
+    brand_column = [row[4] for row in data]
+    encoded_brand = brand_encoder.fit_transform(brand_column)
+
+    # Update data with encoded values
+    for idx, row in enumerate(data):
+        row[4] = encoded_brand[idx]
+
+    # Example usage
+    cluster_centers = apply_kmeans_one_column(
+        data,
+        column_idx=4,
+        encoder=brand_encoder,
+        n_clusters=5
+    )
+
+    st.write(""" ## KMEANS FOR PURCHASED ITEM """)
+    # Extract and encode date column
+    purchased_item_encoder = LabelEncoder()
+    purchased_item_column = [row[6] for row in data]
+    encoded_purchased_item = purchased_item_encoder.fit_transform(purchased_item_column)
+
+    # Update data with encoded values
+    for idx, row in enumerate(data):
+        row[6] = encoded_purchased_item[idx]
+
+    # Example usage
+    cluster_centers = apply_kmeans_one_column(
+        data,
+        column_idx=6,
+        encoder=purchased_item_encoder,
+        n_clusters=4
+    )
+
+    st.write(""" ## KMEANS FOR COLOR """)
+    # Extract and encode date column
+    color_encoder = LabelEncoder()
+    color_column = [row[8] for row in data]
+    encoded_color = color_encoder.fit_transform(color_column)
+
+    # Update data with encoded values
+    for idx, row in enumerate(data):
+        row[8] = encoded_color[idx]
+
+    # Example usage
+    cluster_centers = apply_kmeans_one_column(
+        data,
+        column_idx=8,
+        encoder=color_encoder,
+        n_clusters=3
+    )
+
+    st.write(""" ## KMEANS FOR DATE """)
+    # Extract and encode date column
+    date_encoder = LabelEncoder()
+    date_column = [row[9] for row in data]
+    encoded_date = date_encoder.fit_transform(date_column)
+
+    # Update data with encoded values
+    for idx, row in enumerate(data):
+        row[9] = encoded_date[idx]
+
+    # Example usage
+    cluster_centers = apply_kmeans_one_column(
+        data,
+        column_idx=9,
+        encoder=date_encoder,
+        n_clusters=4
+    )
+
+    st.write(""" ## KMEANS FOR RATING """)
+    cluster_centers = apply_kmeans_one_column(
+        data,
+        column_idx=10,
+        n_clusters=3
+    )
