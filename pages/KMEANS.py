@@ -1,4 +1,4 @@
-from huggingface_hub import hf_hub_download
+from huggingface_hub import hf_hub_download, login
 import pandas as pd
 import streamlit as st
 import numpy as np
@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import LabelEncoder, StandardScaler
+
+login(token="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")
 
 st.title('KMeans Clustering Visualization')
 
