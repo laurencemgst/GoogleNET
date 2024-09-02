@@ -1,20 +1,21 @@
+from huggingface_hub import hf_hub_download
+import pandas as pd
 import streamlit as st
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import LabelEncoder, StandardScaler
-from huggingface_hub import hf_hub_download
 
 st.title('KMeans Clustering Visualization')
 
 def load_data(file_path):
     try:
+        # If the file path starts with "hf://", we use hf_hub_download to fetch it
         if file_path.startswith("hf://"):
-            # Download the file from Hugging Face Hub
-            file_path = hf_hub_download(repo_id=file_path[5:])
+            # Extract repo ID and file path
+            repo_id, file_name = file_path[5:].split("/", 1)
+            file_path = hf_hub_download(repo_id=repo_id, filename=file_name)
         df = pd.read_csv(file_path)
         st.write(df.head())
         return df
@@ -143,7 +144,7 @@ def kmeans_two_columns(data, columns, encoders=None, n_clusters=3):
         st.pyplot(plt.gcf())
 
 # Main Process
-file_path = "hf://datasets/lllaurenceee/Shopee_Bicycle_Reviews/Dataset_D_Duplicate.csv"
+file_path = "hf://lllaurenceee/Shopee_Bicycle_Reviews/Dataset_D_Duplicate.csv"
 df = load_data(file_path)
 
 if df is not None:
