@@ -13,7 +13,7 @@ st.title('KMeans Clustering Visualization')
 
 def load_data(file_path):
     try:
-        # If the file path starts with "hf://", we use hf_hub_download to fetch it
+        # If the file path starts with "hf://", use hf_hub_download to fetch it
         if file_path.startswith("hf://"):
             # Extract repo ID and file path
             repo_id, file_name = file_path[5:].split("/", 1)
@@ -24,7 +24,7 @@ def load_data(file_path):
     except Exception as e:
         st.error(f"Error loading data: {e}")
         return None
-
+    
 # KMEANS APPLICATION FUNCTION
 def apply_kmeans_one_column(data, column_idx, encoder=None, n_clusters=0):
     X = np.array([[row[column_idx]] for row in data])
