@@ -5,7 +5,8 @@ st.write(
     "Prototype Visualization."
 )
 
-st.write("""
+st.write(
+    """
     ## Shopee Bicycle Parts and Accessories Reviews
     DATASET. [here](https://huggingface.co/datasets/lllaurenceee/Shopee_Bicycle_Reviews)
     """)
