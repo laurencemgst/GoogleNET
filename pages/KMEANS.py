@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
-from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.decomposition import PCA
 
 st.title('KMeans Clustering Visualization')
@@ -169,7 +169,7 @@ if df is not None:
     color_column = [row[8] for row in data]
     encoded_color = color_encoder.fit_transform(color_column)
 
-    # Update data with encoded values Continuation of Encders
+    # Update data with encoded values
     for idx, row in enumerate(data):
         row[4] = encoded_brand[idx]
         row[9] = encoded_date[idx]
