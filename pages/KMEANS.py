@@ -10,42 +10,14 @@ from sklearn.decomposition import PCA
 
 st.title('KMeans Clustering Visualization')
 
-df = pd.read_csv("hf://datasets/lllaurenceee/Shopee_Bicycle_Reviews/Dataset_D_Duplicate.csv")
-
-# Convert DataFrame to a list of lists (excluding the header)
-data = [row.tolist() for index, row in df.iterrows()]
-
-# Extract headers
-headers = df.columns.tolist()
-
-# ALL ENCODERS
-shop_encoder = LabelEncoder()
-shop_column = [row[1] for row in data]
-encoded_shop = shop_encoder.fit_transform(shop_column)
-
-brand_encoder = LabelEncoder()
-brand_column = [row[4] for row in data]
-encoded_brand = brand_encoder.fit_transform(brand_column)
-
-date_encoder = LabelEncoder()
-date_column = [row[9] for row in data]
-encoded_date = date_encoder.fit_transform(date_column)
-
-purchased_item_encoder = LabelEncoder()
-purchased_item_column = [row[6] for row in data]
-encoded_purchased_item = purchased_item_encoder.fit_transform(purchased_item_column)
-
-color_encoder = LabelEncoder()
-color_column = [row[8] for row in data]
-encoded_color = color_encoder.fit_transform(color_column)
-
-# Update data with encoded values Continuation of Encders
-for idx, row in enumerate(data):
-    row[4] = encoded_brand[idx]
-    row[9] = encoded_date[idx]
-    row[6] = encoded_purchased_item[idx]
-    row[1] = encoded_shop[idx]
-    row[8] = encoded_color[idx]
+def load_data(file_path):
+    try:
+        df = pd.read_csv(file_path)
+        st.write(df.head())
+        return df
+    except Exception as e:
+        st.error(f"Error loading data: {e}")
+        return None
 
 # KMEANS APPLICATION FUNCTION
 def apply_kmeans_one_column(data, column_idx, encoder=None, n_clusters=0):
@@ -166,6 +138,44 @@ def kmeans_two_columns(data, columns, encoders=None, n_clusters=3):
         plt.title(f'KMeans Clustering: {columns[0]} vs {columns[1]}')
         plt.show()
         st.pyplot(plt.gcf())
+
+# Main Process
+file_path = "hf://datasets/lllaurenceee/Shopee_Bicycle_Reviews/Dataset_D_Duplicate.csv"
+df = load_data(file_path)
+
+if df is not None:
+    # Convert DataFrame to a list of lists and extract headers
+    data = df.values.tolist()
+    headers = df.columns.tolist()
+
+# ALL ENCODERS
+shop_encoder = LabelEncoder()
+shop_column = [row[1] for row in data]
+encoded_shop = shop_encoder.fit_transform(shop_column)
+
+brand_encoder = LabelEncoder()
+brand_column = [row[4] for row in data]
+encoded_brand = brand_encoder.fit_transform(brand_column)
+
+date_encoder = LabelEncoder()
+date_column = [row[9] for row in data]
+encoded_date = date_encoder.fit_transform(date_column)
+
+purchased_item_encoder = LabelEncoder()
+purchased_item_column = [row[6] for row in data]
+encoded_purchased_item = purchased_item_encoder.fit_transform(purchased_item_column)
+
+color_encoder = LabelEncoder()
+color_column = [row[8] for row in data]
+encoded_color = color_encoder.fit_transform(color_column)
+
+# Update data with encoded values Continuation of Encders
+for idx, row in enumerate(data):
+    row[4] = encoded_brand[idx]
+    row[9] = encoded_date[idx]
+    row[6] = encoded_purchased_item[idx]
+    row[1] = encoded_shop[idx]
+    row[8] = encoded_color[idx]
 
 # APPLICATION OF SINGLE COLUMN KMEANS CLUSTERING FUNCTION
 with st.expander("KMEANS SINGLE COLUMN"):
