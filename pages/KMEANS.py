@@ -148,63 +148,63 @@ if df is not None:
     data = df.values.tolist()
     headers = df.columns.tolist()
 
-# ALL ENCODERS
-shop_encoder = LabelEncoder()
-shop_column = [row[1] for row in data]
-encoded_shop = shop_encoder.fit_transform(shop_column)
+    # ALL ENCODERS
+    shop_encoder = LabelEncoder()
+    shop_column = [row[1] for row in data]
+    encoded_shop = shop_encoder.fit_transform(shop_column)
 
-brand_encoder = LabelEncoder()
-brand_column = [row[4] for row in data]
-encoded_brand = brand_encoder.fit_transform(brand_column)
+    brand_encoder = LabelEncoder()
+    brand_column = [row[4] for row in data]
+    encoded_brand = brand_encoder.fit_transform(brand_column)
 
-date_encoder = LabelEncoder()
-date_column = [row[9] for row in data]
-encoded_date = date_encoder.fit_transform(date_column)
+    date_encoder = LabelEncoder()
+    date_column = [row[9] for row in data]
+    encoded_date = date_encoder.fit_transform(date_column)
 
-purchased_item_encoder = LabelEncoder()
-purchased_item_column = [row[6] for row in data]
-encoded_purchased_item = purchased_item_encoder.fit_transform(purchased_item_column)
+    purchased_item_encoder = LabelEncoder()
+    purchased_item_column = [row[6] for row in data]
+    encoded_purchased_item = purchased_item_encoder.fit_transform(purchased_item_column)
 
-color_encoder = LabelEncoder()
-color_column = [row[8] for row in data]
-encoded_color = color_encoder.fit_transform(color_column)
+    color_encoder = LabelEncoder()
+    color_column = [row[8] for row in data]
+    encoded_color = color_encoder.fit_transform(color_column)
 
-# Update data with encoded values Continuation of Encders
-for idx, row in enumerate(data):
-    row[4] = encoded_brand[idx]
-    row[9] = encoded_date[idx]
-    row[6] = encoded_purchased_item[idx]
-    row[1] = encoded_shop[idx]
-    row[8] = encoded_color[idx]
+    # Update data with encoded values Continuation of Encders
+    for idx, row in enumerate(data):
+        row[4] = encoded_brand[idx]
+        row[9] = encoded_date[idx]
+        row[6] = encoded_purchased_item[idx]
+        row[1] = encoded_shop[idx]
+        row[8] = encoded_color[idx]
 
-# APPLICATION OF SINGLE COLUMN KMEANS CLUSTERING FUNCTION
-with st.expander("KMEANS SINGLE COLUMN"):
-    st.write(""" ## KMEANS FOR SHOP """)
-    apply_kmeans_one_column(data, column_idx=1, encoder=shop_encoder, n_clusters=5)
-    st.write(""" ## KMEANS FOR PRICE """)
-    apply_kmeans_one_column(data, column_idx=5, n_clusters=4)
-    st.write(""" ## KMEANS FOR BRAND """)
-    apply_kmeans_one_column(data, column_idx=4, encoder=brand_encoder, n_clusters=5)
-    st.write(""" ## KMEANS FOR PURCHASED ITEM """)
-    apply_kmeans_one_column(data, column_idx=6, encoder=purchased_item_encoder, n_clusters=4)
-    st.write(""" ## KMEANS FOR COLOR """)
-    apply_kmeans_one_column(data, column_idx=8, encoder=color_encoder, n_clusters=3)
-    st.write(""" ## KMEANS FOR DATE """)
-    apply_kmeans_one_column(data, column_idx=9, encoder=date_encoder, n_clusters=4)
-    st.write(""" ## KMEANS FOR RATING """)
-    apply_kmeans_one_column(data, column_idx=10, n_clusters=3)
+    # APPLICATION OF SINGLE COLUMN KMEANS CLUSTERING FUNCTION
+    with st.expander("KMEANS SINGLE COLUMN"):
+        st.write(""" ## KMEANS FOR SHOP """)
+        apply_kmeans_one_column(data, column_idx=1, encoder=shop_encoder, n_clusters=5)
+        st.write(""" ## KMEANS FOR PRICE """)
+        apply_kmeans_one_column(data, column_idx=5, n_clusters=4)
+        st.write(""" ## KMEANS FOR BRAND """)
+        apply_kmeans_one_column(data, column_idx=4, encoder=brand_encoder, n_clusters=5)
+        st.write(""" ## KMEANS FOR PURCHASED ITEM """)
+        apply_kmeans_one_column(data, column_idx=6, encoder=purchased_item_encoder, n_clusters=4)
+        st.write(""" ## KMEANS FOR COLOR """)
+        apply_kmeans_one_column(data, column_idx=8, encoder=color_encoder, n_clusters=3)
+        st.write(""" ## KMEANS FOR DATE """)
+        apply_kmeans_one_column(data, column_idx=9, encoder=date_encoder, n_clusters=4)
+        st.write(""" ## KMEANS FOR RATING """)
+        apply_kmeans_one_column(data, column_idx=10, n_clusters=3)
 
-# APPLICATION OF TWO COLUMNS KMEANS CLUSTERING FUNCTION
-with st.expander("KMEANS TWO COLUMN"):
-    st.write(""" ## KMEANS FOR BRAND VS PRICE """)
-    kmeans_two_columns(data, ["brand", "price"], encoders=[brand_encoder])
-    st.write(""" ## KMEANS FOR BRAND VS DATE """)
-    kmeans_two_columns(data, ["brand", "date"], encoders=[brand_encoder, date_encoder])
-    st.write(""" ## KMEANS FOR BRAND VS PURCHASED ITEM """)
-    kmeans_two_columns(data, ["brand", "purchased_item"], encoders=[brand_encoder, purchased_item_encoder])
-    st.write(""" ## KMEANS FOR DATE VS PRICE """)
-    kmeans_two_columns(data, ["date", "price"], encoders=[date_encoder])
-    st.write(""" ## KMEANS FOR DATE VS ORDER ID """)
-    kmeans_two_columns(data, ["date", "orderid"], encoders=[date_encoder])
-    st.write(""" ## KMEANS FOR PURCHASED ITEM VS PRICE """)
-    kmeans_two_columns(data, ["purchased_item", "price"], encoders=[purchased_item_encoder])
+    # APPLICATION OF TWO COLUMNS KMEANS CLUSTERING FUNCTION
+    with st.expander("KMEANS TWO COLUMN"):
+        st.write(""" ## KMEANS FOR BRAND VS PRICE """)
+        kmeans_two_columns(data, ["brand", "price"], encoders=[brand_encoder])
+        st.write(""" ## KMEANS FOR BRAND VS DATE """)
+        kmeans_two_columns(data, ["brand", "date"], encoders=[brand_encoder, date_encoder])
+        st.write(""" ## KMEANS FOR BRAND VS PURCHASED ITEM """)
+        kmeans_two_columns(data, ["brand", "purchased_item"], encoders=[brand_encoder, purchased_item_encoder])
+        st.write(""" ## KMEANS FOR DATE VS PRICE """)
+        kmeans_two_columns(data, ["date", "price"], encoders=[date_encoder])
+        st.write(""" ## KMEANS FOR DATE VS ORDER ID """)
+        kmeans_two_columns(data, ["date", "orderid"], encoders=[date_encoder])
+        st.write(""" ## KMEANS FOR PURCHASED ITEM VS PRICE """)
+        kmeans_two_columns(data, ["purchased_item", "price"], encoders=[purchased_item_encoder])
