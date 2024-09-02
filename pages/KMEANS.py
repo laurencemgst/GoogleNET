@@ -6,12 +6,15 @@ import seaborn as sns
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import LabelEncoder, StandardScaler
-from sklearn.decomposition import PCA
+from huggingface_hub import hf_hub_download
 
 st.title('KMeans Clustering Visualization')
 
 def load_data(file_path):
     try:
+        if file_path.startswith("hf://"):
+            # Download the file from Hugging Face Hub
+            file_path = hf_hub_download(repo_id=file_path[5:])
         df = pd.read_csv(file_path)
         st.write(df.head())
         return df
