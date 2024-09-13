@@ -103,20 +103,35 @@ for month in df['month'].unique():
     st.pyplot(plt.gcf())
     plt.close()
 
-st.markdown("### Itemsets with High Confidence")
-confidence_threshold = 0.54
-high_confidence_rules = rules[rules['confidence'] > confidence_threshold]
-high_confidence_rules = high_confidence_rules.sort_values(by='confidence', ascending=False)
-table = high_confidence_rules[['antecedents', 'consequents', 'confidence']]
-st.write(table)
-
-st.markdown("### Itemsets with High Support")
-support_threshold = 0.02
-high_support_rules = rules[rules['support'] > support_threshold]
-high_support_rules = high_support_rules.sort_values(by='support', ascending=False)
-table = high_support_rules[['antecedents', 'consequents', 'support']]
-st.write(table)
-
+# Display the default table
 st.markdown("### Itemsets Support and Confidence")
-table = rules[['antecedents', 'consequents', 'support', 'confidence']]
-st.write(table)
+#table = rules[['antecedents', 'consequents', 'support', 'confidence']]
+#st.write(table)
+
+# Add a selectbox for users to choose sorting preference
+sort_option = st.selectbox(
+    "Sort by:",
+    ["Default", "Highest Confidence", "Highest Support"]
+)
+
+if sort_option == "Highest Confidence":
+    confidence_threshold = 0.54
+    high_confidence_rules = rules[rules['confidence'] > confidence_threshold]
+    high_confidence_rules = high_confidence_rules.sort_values(by='confidence', ascending=False)
+    table = high_confidence_rules[['antecedents', 'consequents', 'confidence']]
+    st.markdown("### Itemsets with High Confidence")
+    st.write(table)
+
+elif sort_option == "Highest Support":
+    support_threshold = 0.02
+    high_support_rules = rules[rules['support'] > support_threshold]
+    high_support_rules = high_support_rules.sort_values(by='support', ascending=False)
+    table = high_support_rules[['antecedents', 'consequents', 'support']]
+    st.markdown("### Itemsets with High Support")
+    st.write(table)
+
+# Show default table again if "Default" is selected
+if sort_option == "Default":
+    st.markdown("### Itemsets Support and Confidence")
+    table = rules[['antecedents', 'consequents', 'support', 'confidence']]
+    st.write(table)
