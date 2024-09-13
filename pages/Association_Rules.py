@@ -5,6 +5,8 @@ import seaborn as sns
 from mlxtend.frequent_patterns import apriori, association_rules
 from mlxtend.preprocessing import TransactionEncoder
 
+st.title('Association Rules Visualization')
+
 # Load data with caching
 @st.cache_data
 def load_data():
