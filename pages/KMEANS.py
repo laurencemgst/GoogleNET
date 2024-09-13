@@ -10,7 +10,12 @@ from sklearn.decomposition import PCA
 
 st.title('KMeans Clustering Visualization')
 
-df = pd.read_csv("hf://datasets/lllaurenceee/Shopee_Bicycle_Reviews/Dataset_D_Duplicate.csv")
+@st.cache_data
+def load_data():
+    return pd.read_csv("hf://datasets/lllaurenceee/Shopee_Bicycle_Reviews/Dataset_D_Duplicate.csv")
+
+df = load_data()
+
 
 # Convert DataFrame to a list of lists (excluding the header)
 data = [row.tolist() for index, row in df.iterrows()]
