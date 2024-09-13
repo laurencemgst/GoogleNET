@@ -1,12 +1,10 @@
 import pandas as pd
 import streamlit as st
-from datasets import load_dataset
 from mlxtend.frequent_patterns import apriori, association_rules
 from mlxtend.preprocessing import TransactionEncoder
 
-# Load the dataset
-ds = load_dataset("lllaurenceee/Shopee_Bicycle_Reviews")
-df = ds['train'].to_pandas()
+# Load the dataset from a CSV file
+df = pd.read_csv("hf://datasets/lllaurenceee/Shopee_Bicycle_Reviews/Dataset_D_Duplicate.csv")
 
 # Group by 'orderid' and aggregate 'purchased_item' lists
 grouped = df.groupby('orderid')['purchased_item'].apply(list).reset_index()
