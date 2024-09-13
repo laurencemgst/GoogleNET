@@ -6,3 +6,5 @@ seaborn
 scikit-learn
 fsspec
 huggingface_hub
+datasets
+mlxtend
