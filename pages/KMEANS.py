@@ -2,7 +2,6 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import LabelEncoder, StandardScaler
@@ -175,7 +174,7 @@ def kmeans_two_columns(data, columns, encoders=None, n_clusters=3):
 # APPLICATION OF SINGLE COLUMN KMEANS CLUSTERING FUNCTION
 with st.expander("KMEANS SINGLE COLUMN"):
     st.write(""" ## KMEANS FOR SHOP """)
-    apply_kmeans_one_column(data, column_idx=1, encoder=shop_encoder, n_clusters=5)
+    apply_kmeans_one_column(data, column_idx=1, encoder=shop_encoder, n_clusters=7)
     st.write(""" ## KMEANS FOR PRICE """)
     apply_kmeans_one_column(data, column_idx=5, n_clusters=4)
     st.write(""" ## KMEANS FOR BRAND """)
