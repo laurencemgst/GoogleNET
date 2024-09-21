@@ -41,34 +41,54 @@ def plot_bar(data, x_col, y_col, title, xlabel, ylabel, color='skyblue'):
     st.pyplot(plt.gcf())
     plt.close()
 
-st.markdown("### Top 10 Frequent Itemsets")
-plot_bar(frequent_itemsets.head(10), 'support', 'itemsets', 'Top 10 Frequent Itemsets', 'Support', 'Itemsets')
+@st.fragment
+def Top10():
+    Top10Sel = st.selectbox(
+        "Sort by:",
+        ["Frequent Itemsets", "Most Purchased Items", "Shops by Sales Volume", "Products by Average Rating", "Product Variations"]
+    )
+    if Top10Sel == "Frequent Itemsets":
+        st.markdown("### Top 10 Frequent Itemsets")
+        plot_bar(frequent_itemsets.head(10), 'support', 'itemsets', 'Top 10 Frequent Itemsets', 'Support', 'Itemsets')
 
-st.markdown("### Top 10 Most Purchased Items")
-item_counts = df['purchased_item'].value_counts().head(10)
-plot_bar(pd.DataFrame({'itemsets': item_counts.index, 'support': item_counts.values}), 'support', 'itemsets', 'Top 10 Most Purchased Items', 'Number of Purchases', 'Purchased Item')
+    elif Top10Sel == "Most Purchased Items":
+        st.markdown("### Top 10 Most Purchased Items")
+        item_counts = df['purchased_item'].value_counts().head(10)
+        plot_bar(pd.DataFrame({'itemsets': item_counts.index, 'support': item_counts.values}), 'support', 'itemsets', 'Top 10 Most Purchased Items', 'Number of Purchases', 'Purchased Item')
 
-st.markdown("### Top 10 Shops by Sales Volume")
-shop_sales = df['shop'].value_counts().head(10)
-plot_bar(pd.DataFrame({'shop': shop_sales.index, 'sales': shop_sales.values}), 'sales', 'shop', 'Top 10 Shops by Sales Volume', 'Number of Orders', 'Shop')
+    elif Top10Sel == "Shops by Sales Volume":
+        st.markdown("### Top 10 Shops by Sales Volume")
+        shop_sales = df['shop'].value_counts().head(10)
+        plot_bar(pd.DataFrame({'shop': shop_sales.index, 'sales': shop_sales.values}), 'sales', 'shop', 'Top 10 Shops by Sales Volume', 'Number of Orders', 'Shop')
 
-st.markdown("### Top 10 Products by Average Rating")
-avg_rating = df.groupby('purchased_item')['rating'].mean().sort_values(ascending=False).head(10)
-plot_bar(pd.DataFrame({'product': avg_rating.index, 'rating': avg_rating.values}), 'rating', 'product', 'Top 10 Products by Average Rating', 'Average Rating', 'Product Name')
+    elif Top10Sel == "Products by Average Rating":
+        st.markdown("### Top 10 Products by Average Rating")
+        avg_rating = df.groupby('purchased_item')['rating'].mean().sort_values(ascending=False).head(10)
+        plot_bar(pd.DataFrame({'product': avg_rating.index, 'rating': avg_rating.values}), 'rating', 'product', 'Top 10 Products by Average Rating', 'Average Rating', 'Product Name')
 
-st.markdown("### Price Distribution of Products")
-plt.figure(figsize=(8, 6))
-sns.histplot(df['price'], bins=20, kde=True, color='blue')
-plt.title('Price Distribution of Products', fontsize=14)
-plt.xlabel('Price', fontsize=14)
-plt.ylabel('Frequency', fontsize=14)
-plt.tight_layout()
-st.pyplot(plt.gcf())
-plt.close()
+    elif Top10Sel == "Product Variations":
+        st.markdown("### Top 10 Product Variations")
+        variation_counts = df['variation'].value_counts().head(10)
+        plot_bar(pd.DataFrame({'variation': variation_counts.index, 'count': variation_counts.values}), 'count', 'variation', 'Top 10 Product Variations', 'Number of Purchases', 'Variation')
 
-st.markdown("### Top 10 Product Variations")
-variation_counts = df['variation'].value_counts().head(10)
-plot_bar(pd.DataFrame({'variation': variation_counts.index, 'count': variation_counts.values}), 'count', 'variation', 'Top 10 Product Variations', 'Number of Purchases', 'Variation')
+Top10()
+
+@st.fragment
+def PriceDist():
+    st.markdown("### Price Distribution of Products")
+    price_range = st.slider('Select Price Range', 0, 8000, (0, 8000))
+    filtered_df = df[(df['price'] >= price_range[0]) & (df['price'] <= price_range[1])]
+
+    plt.figure(figsize=(8, 6))
+    sns.histplot(filtered_df['price'], bins=20, kde=True, color='blue')
+    plt.title('Price Distribution of Products', fontsize=14)
+    plt.xlabel('Price', fontsize=14)
+    plt.ylabel('Frequency', fontsize=14)
+    plt.tight_layout()
+    st.pyplot(plt.gcf())
+    plt.close()
+
+PriceDist()
 
 st.markdown("### Monthly Sales Trends")
 df['date'] = pd.to_datetime(df['date'])
@@ -84,24 +104,31 @@ plt.tight_layout()
 st.pyplot(plt.gcf())
 plt.close()
 
-st.markdown("### Top 5 Items by Month")
-df['month'] = df['date'].dt.to_period('M').astype(str)
-basket = pd.pivot_table(df, index='orderid', columns='purchased_item', aggfunc='size', fill_value=0)
-basket = basket > 0
+@st.fragment
+def Top5forMonth():
+    st.markdown("### Monthly Top 5 Items")
+    df['month'] = df['date'].dt.to_period('M').astype(str)
+    selected_month = st.selectbox("Select Month", df['month'].unique())
 
-for month in df['month'].unique():
-    monthly_data = basket.loc[df[df['month'] == month]['orderid'].unique()]
+    st.markdown(f"### Top 5 Items for {selected_month}")
+
+    basket = pd.pivot_table(df, index='orderid', columns='purchased_item', aggfunc='size', fill_value=0)
+    basket = basket > 0
+    monthly_data = basket.loc[df[df['month'] == selected_month]['orderid'].unique()]
     frequent_items = apriori(monthly_data, min_support=0.01, use_colnames=True)
     top_items = frequent_items.sort_values(by='support', ascending=False).head(5)
-    
+
     plt.figure(figsize=(10, 6))
     sns.barplot(x=top_items['support'], y=top_items['itemsets'].apply(lambda x: ', '.join(list(x))), color='skyblue')
-    plt.title(f'Top 5 Items with Highest Support - {month}', fontsize=16)
+    plt.title(f'Top 5 Items with Highest Support - {selected_month}', fontsize=16)
     plt.xlabel('Support', fontsize=14)
     plt.ylabel('Itemsets', fontsize=14)
     plt.tight_layout()
+
     st.pyplot(plt.gcf())
     plt.close()
+    
+Top5forMonth()
 
 # Display the default table
 st.markdown("### Itemsets Support and Confidence")
@@ -109,11 +136,11 @@ st.markdown("### Itemsets Support and Confidence")
 #st.write(table)
 
 @st.fragment
-def nyaraw():
+def SupportAndConfidence():
     # Add a selectbox for users to choose sorting preference
     sort_option = st.selectbox(
         "Sort by:",
-        ["Default", "Highest Confidence", "Highest Support"]
+        ["Itemsets Support and Confidence", "Highest Confidence", "Highest Support"]
     )
 
     if sort_option == "Highest Confidence":
@@ -132,10 +159,9 @@ def nyaraw():
         st.markdown("### Itemsets with High Support")
         st.write(table)
 
-    # Show default table again if "Default" is selected
-    if sort_option == "Default":
+    elif sort_option == "Itemsets Support and Confidence":
         st.markdown("### Itemsets Support and Confidence")
         table = rules[['antecedents', 'consequents', 'support', 'confidence']]
         st.write(table)
 
-nyaraw()
+SupportAndConfidence()
