@@ -112,30 +112,48 @@ def SuperMain():
     plt.close()
 
     @st.fragment
-    def Top5forMonth():
-        st.markdown("### Monthly Top 5 Items")
+    def Top5forMonth(df):
+        st.markdown("### Monthly Top Items")
+        
+        # Convert date column to datetime and then extract month period
         df['month'] = df['date'].dt.to_period('M').astype(str)
-        selected_month = st.selectbox("Select Month", df['month'].unique())
-
-        st.markdown(f"### Top 5 Items for {selected_month}")
-
+        
+        # Create a dictionary to map 'YYYY-MM' to 'Month Year' and sort by the original date
+        month_map = {m: pd.to_datetime(m).strftime('%B %Y') for m in sorted(df['month'].unique())}
+        
+        # Select month from dropdown (displaying sorted 'Month Year')
+        selected_month_readable = st.selectbox("Select Month", list(month_map.values()))
+        
+        # Get the original 'YYYY-MM' format for filtering
+        selected_month = [k for k, v in month_map.items() if v == selected_month_readable][0]
+        
+        st.markdown(f"### Top Items for {selected_month_readable}")
+        
+        # Create basket for the selected month
         basket = pd.pivot_table(df, index='orderid', columns='purchased_item', aggfunc='size', fill_value=0)
-        basket = basket > 0
+        basket = basket > 0  # Convert counts to binary values (1 if purchased, 0 otherwise)
+        
+        # Filter the data for the selected month
         monthly_data = basket.loc[df[df['month'] == selected_month]['orderid'].unique()]
+        
+        # Run the apriori algorithm
         frequent_items = apriori(monthly_data, min_support=0.01, use_colnames=True)
         top_items = frequent_items.sort_values(by='support', ascending=False).head(5)
-
+        
+        # Plot the top 5 items
         plt.figure(figsize=(10, 6))
         sns.barplot(x=top_items['support'], y=top_items['itemsets'].apply(lambda x: ', '.join(list(x))), color='skyblue')
-        plt.title(f'Top 5 Items with Highest Support - {selected_month}', fontsize=16)
+        plt.title(f'Top Items with Highest Support - {selected_month_readable}', fontsize=16)
         plt.xlabel('Support', fontsize=14)
         plt.ylabel('Itemsets', fontsize=14)
         plt.tight_layout()
-
+        
+        # Display the plot in Streamlit
         st.pyplot(plt.gcf())
         plt.close()
-        
-    Top5forMonth()
+
+    # Call the function
+    Top5forMonth(df)
 
     # Display the default table
     st.markdown("### Itemsets Support and Confidence")

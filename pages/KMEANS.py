@@ -178,7 +178,7 @@ with st.expander("KMEANS SINGLE COLUMN"):
     st.write(""" ## KMEANS FOR PRICE """)
     apply_kmeans_one_column(data, column_idx=5, n_clusters=4)
     st.write(""" ## KMEANS FOR BRAND """)
-    apply_kmeans_one_column(data, column_idx=4, encoder=brand_encoder, n_clusters=5)
+    apply_kmeans_one_column(data, column_idx=4, encoder=brand_encoder, n_clusters=8)
     st.write(""" ## KMEANS FOR PURCHASED ITEM """)
     apply_kmeans_one_column(data, column_idx=6, encoder=purchased_item_encoder, n_clusters=4)
     st.write(""" ## KMEANS FOR COLOR """)
