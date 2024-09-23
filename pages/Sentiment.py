@@ -9,7 +9,7 @@ st.title("Sentiment Analysis")
 
 @st.cache_data
 def load_data():
-    return pd.read_csv("hf://datasets/lllaurenceee/Shopee_Bicycle_Reviews/labeled_com.csv")
+    return pd.read_csv("hf://datasets/lllaurenceee/Shopee_Bicycle_Reviews/labeled_comments.csv")
 
 df = load_data()
 
