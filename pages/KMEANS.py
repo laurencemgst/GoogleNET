@@ -164,8 +164,8 @@ def kmeans_two_columns(data, columns, encoders=None, n_clusters=3):
         plt.ylabel(columns[1])
         
         # Create a legend for cluster centers
-        legend_handles = [plt.Line2D([0], [0], marker='X', color='w', label=f"Group of Consumers: {i+1}", markersize=10, markerfacecolor='black') for i in range(n_clusters)]
-        plt.legend(handles=legend_handles, title=f'{columns[0]} vs {columns[1]}')
+        legend_handles = [plt.Line2D([0], [0], marker='X', color='w', label=f"Consumer: {i+1}", markersize=10, markerfacecolor='black') for i in range(n_clusters)]
+        plt.legend(handles=legend_handles, title=f'Group of Consumers')
         
         plt.title(f'KMeans Clustering: {columns[0]} vs {columns[1]}')
         plt.show()
